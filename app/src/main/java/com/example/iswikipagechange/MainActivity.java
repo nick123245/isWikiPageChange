@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
         textView  = findViewById(R.id.textView);
         listView = findViewById(R.id.list);
-        reloadButton = findViewById(R.id.addButton);
+        reloadButton = findViewById(R.id.reloadButton);
 
         wikiPages = DB.getAllRecords(this);  //возьмем все записи из базы данных
 

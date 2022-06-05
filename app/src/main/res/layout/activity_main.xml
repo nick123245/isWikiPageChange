@@ -12,15 +12,34 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Список адресов страничек Википедии"
-        android:textSize="15dp"
-        android:textColor="@color/black"
-        android:textStyle="bold"
         android:layout_margin="5dp"
+        android:text="Список адресов страничек Википедии"
+        android:textColor="@color/black"
+        android:textSize="15dp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/newUrlField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:padding="10dp"
+        android:textSize="25dp"
+        android:inputType="textPersonName"
+        android:layout_margin="15dp"
+        android:background="@drawable/bg_layout"
+        android:text="" />
+
+    <Button
+        android:id="@+id/addButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:text="добавить запись" />
 
     <ListView
         android:id="@+id/list"
@@ -33,7 +52,7 @@
     </ListView>
     <Button
         android:layout_margin="15dp"
-        android:id="@+id/addButton"
+        android:id="@+id/reloadButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Обновить данные в базе" />
