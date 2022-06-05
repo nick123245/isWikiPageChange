@@ -41,6 +41,13 @@
         android:layout_margin="15dp"
         android:text="добавить запись" />
 
+    <Button
+        android:id="@+id/reloadButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:text="Обновить данные в базе" />
+
     <ListView
         android:id="@+id/list"
         android:layout_margin="15dp"
@@ -50,11 +57,5 @@
         android:layout_height="wrap_content">
 
     </ListView>
-    <Button
-        android:layout_margin="15dp"
-        android:id="@+id/reloadButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Обновить данные в базе" />
 
 </LinearLayout>

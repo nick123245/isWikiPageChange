@@ -17,7 +17,7 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     public static final String COLUMN_IS_CHANGE = "is_change";
 
     private static final String DATABASE_NAME = "wiki.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 5;
 
     // Database creation sql statement
     private static final String DATABASE_CREATE = "create table "

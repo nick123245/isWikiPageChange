@@ -9,8 +9,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -18,17 +20,19 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
 
     WikiPage[] wikiPages;
-    String[] paths;
+    ArrayList<String> paths;
     TextView textView;
     ListView listView;
     ArrayAdapter<String> adapter;
     Context context;
-    Button reloadButton;
+    Button reloadButton, addButton;
+    EditText newUrlField;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,13 +45,15 @@ public class MainActivity extends AppCompatActivity {
         textView  = findViewById(R.id.textView);
         listView = findViewById(R.id.list);
         reloadButton = findViewById(R.id.reloadButton);
+        addButton = findViewById(R.id.addButton);
+        newUrlField = findViewById(R.id.newUrlField);
 
         wikiPages = DB.getAllRecords(this);  //возьмем все записи из базы данных
 
         //создадим строковый массив для заполнения списка
-        paths = new String[wikiPages.length];
-        for (int i=0; i<paths.length; i++){
-            paths[i] = wikiPages[i].getUrl();
+        paths = new ArrayList<>();
+        for (int i=0; i<wikiPages.length; i++){
+            paths.add(wikiPages[i].getUrl());
         }
 
         //адаптер для списка
@@ -57,17 +63,33 @@ public class MainActivity extends AppCompatActivity {
 
         // для парсинга необходимо создать новый поток
         MyTask mt = new MyTask();
-        mt.execute(paths);
+        mt.execute(paths.toArray(new String[paths.size()]));
+
+        //лобавление записи в БД по нажатию на кнопку
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!newUrlField.getText().toString().equals("")){
+                    DB.addWikiPage(new WikiPage(newUrlField.getText().toString()), v.getContext());
+                    paths.add(newUrlField.getText().toString());
+                    adapter.notifyDataSetChanged();
+                    Toast.makeText(getApplicationContext(),"Страница успешно добавлена!", Toast.LENGTH_LONG).show();
+                }else {
+                    Toast.makeText(getApplicationContext(),"Поле пустое!", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
 
         //по нажатию на кнопку заполним таблицу в базе данных новыми значениями даты изменения и обновим список на экране
         reloadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DB.updateRecords(wikiPages,context);
+                Log.d("wiki7777", " update");
                 wikiPages = DB.getAllRecords(context);
-                //Log.d("wiki7777", " после " + Arrays.toString(wikiPages));
-                for (int i=0; i<paths.length; i++){
-                    paths[i] = wikiPages[i].getUrl() + "\n" + "Последняя дата правки в базе: "  + wikiPages[i].getDate() + "\n" + "Последняя дата правки на сайте: " + wikiPages[i].getNewDate() + "\n" + wikiPages[i].getIsChange();
+                paths.clear();
+                for (int i=0; i<wikiPages.length; i++){
+                    paths.add(wikiPages[i].getUrl() + "\n" + "Последняя дата правки в базе: "  + wikiPages[i].getDate() + "\n" + "Последняя дата правки на сайте: " + wikiPages[i].getNewDate() + "\n" + wikiPages[i].getIsChange());
                 }
                 adapter.notifyDataSetChanged();
             }
@@ -100,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
                             isChange = " \nзапись была изменена";
                         }
                         // формируем новую строку для списка на экране
-                        paths[i] = paths[i] + "\n" + "Последняя дата правки в базе: "  + wikiPages[i].getDate() + "\n" + "Последняя дата правки на сайте: " + wikiPages[i].getNewDate() + isChange;
+                        paths.set(i, paths.get(i) + "\n" + "Последняя дата правки в базе: "  + wikiPages[i].getDate() + "\n" + "Последняя дата правки на сайте: " + wikiPages[i].getNewDate() + isChange);
                         //Log.d("wiki7777", str);
 
                     }
@@ -114,10 +136,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
+
+
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             adapter.notifyDataSetChanged();
         }
     }
+
+
 }
