@@ -11,8 +11,12 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text=""
-        android:textSize="35dp"
+        android:layout_gravity="center"
+        android:text="Список адресов страничек Википедии"
+        android:textSize="15dp"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:layout_margin="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -20,6 +24,9 @@
 
     <ListView
         android:id="@+id/list"
+        android:layout_margin="15dp"
+        android:padding="10dp"
+        android:background="@drawable/bg_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 

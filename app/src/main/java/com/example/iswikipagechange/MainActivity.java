@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
         //адаптер для списка
         adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, paths);
+                R.layout.item_layout, paths);
         listView.setAdapter(adapter);
 
         // для парсинга необходимо создать новый поток
@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
                 wikiPages = DB.getAllRecords(context);
                 //Log.d("wiki7777", " после " + Arrays.toString(wikiPages));
                 for (int i=0; i<paths.length; i++){
-                    paths[i] = wikiPages[i].getUrl() + "\n" + "Последняя дата правки в базе: "  + wikiPages[i].getDate() + "\n" + "Последняя дата правки на сайте: " + wikiPages[i].getNewDate() + "\n";
+                    paths[i] = wikiPages[i].getUrl() + "\n" + "Последняя дата правки в базе: "  + wikiPages[i].getDate() + "\n" + "Последняя дата правки на сайте: " + wikiPages[i].getNewDate() + "\n" + wikiPages[i].getIsChange();
                 }
                 adapter.notifyDataSetChanged();
             }
