@@ -21,10 +21,10 @@ public class DB {
         cursor = bd.rawQuery(sql,null);
         WikiPage[] wikiPages = new WikiPage[cursor.getCount()];
         cursor.moveToFirst();
-        Log.d("wiki7777", "records: " + cursor.getCount());
+        //Log.d("wiki7777", "records: " + cursor.getCount());
         int i = 0;
         while (!cursor.isAfterLast()){
-            Log.d("wiki7777", cursor.getString(0) + " " + cursor.getString(1) + " " + cursor.getString(2) + " " + cursor.getString(3) + " " + cursor.getString(4));
+            //  Log.d("wiki7777", cursor.getString(0) + " " + cursor.getString(1) + " " + cursor.getString(2) + " " + cursor.getString(3) + " " + cursor.getString(4));
             WikiPage wikiPage = new WikiPage(cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4));
             wikiPages[i] = wikiPage;
             i++;
@@ -48,8 +48,18 @@ public class DB {
             cv.put("is_change",wikiPages[i].getIsChange());
             bd.update("wiki_pages", cv, "url = ?", new String[]{wikiPages[i].getUrl()});
         }
+    }
 
+    // добавление новой странички в базу данных
+    public static void addWikiPage(WikiPage wikiPage, Context context){
+        MySQLiteOpenHelper dataBaseHelper;
+        SQLiteDatabase bd;
+        dataBaseHelper = new MySQLiteOpenHelper(context);
+        bd = dataBaseHelper.getReadableDatabase();
 
+        ContentValues cv = new ContentValues();
+        cv.put("url", wikiPage.getUrl());
+        bd.insert("wiki_pages",null,cv);
     }
 
 
