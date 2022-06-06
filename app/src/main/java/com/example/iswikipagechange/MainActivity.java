@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     ListView listView;
     ArrayAdapter<String> adapter;
     Context context;
-    Button reloadButton, addButton;
+    Button reloadButton, addButton, getDataButton;
     EditText newUrlField;
 
     @Override
@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         listView = findViewById(R.id.list);
         reloadButton = findViewById(R.id.reloadButton);
         addButton = findViewById(R.id.addButton);
+        getDataButton = findViewById(R.id.getDataButton);
         newUrlField = findViewById(R.id.newUrlField);
 
         wikiPages = DB.getAllRecords(this);  //возьмем все записи из базы данных
@@ -61,9 +62,18 @@ public class MainActivity extends AppCompatActivity {
                 R.layout.item_layout, paths);
         listView.setAdapter(adapter);
 
-        // для парсинга необходимо создать новый поток
-        MyTask mt = new MyTask();
-        mt.execute(paths.toArray(new String[paths.size()]));
+
+        //кнопка получения новых данных с сервера
+        getDataButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // для парсинга необходимо создать новый поток
+                MyTask mt = new MyTask();
+                mt.execute(paths.toArray(new String[paths.size()]));
+            }
+        });
+
+
 
         //лобавление записи в БД по нажатию на кнопку
         addButton.setOnClickListener(new View.OnClickListener() {
@@ -72,6 +82,8 @@ public class MainActivity extends AppCompatActivity {
                 if (!newUrlField.getText().toString().equals("")){
                     DB.addWikiPage(new WikiPage(newUrlField.getText().toString()), v.getContext());
                     paths.add(newUrlField.getText().toString());
+                //    mt.execute(paths.toArray(new String[paths.size()]));
+
                     adapter.notifyDataSetChanged();
                     Toast.makeText(getApplicationContext(),"Страница успешно добавлена!", Toast.LENGTH_LONG).show();
                 }else {

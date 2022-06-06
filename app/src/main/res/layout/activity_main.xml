@@ -34,19 +34,27 @@
         android:background="@drawable/bg_layout"
         android:text="" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/addButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
         android:text="добавить запись" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/getDataButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:background="@color/orange"
+        android:text="Получить данные с сервера" />
+
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/reloadButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
-        android:text="Обновить данные в базе" />
+        android:text="записать данные в базу" />
 
     <ListView
         android:id="@+id/list"
