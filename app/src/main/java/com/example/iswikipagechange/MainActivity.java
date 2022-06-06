@@ -25,7 +25,7 @@ import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
 
-    WikiPage[] wikiPages;
+    ArrayList<WikiPage> wikiPages;
     ArrayList<String> paths;
     TextView textView;
     ListView listView;
@@ -53,8 +53,8 @@ public class MainActivity extends AppCompatActivity {
 
         //создадим строковый массив для заполнения списка
         paths = new ArrayList<>();
-        for (int i=0; i<wikiPages.length; i++){
-            paths.add(wikiPages[i].getUrl());
+        for (int i=0; i<wikiPages.size(); i++){
+            paths.add(wikiPages.get(i).getUrl());
         }
 
         //адаптер для списка

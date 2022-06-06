@@ -7,11 +7,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class DB {
 
-    //выбрать все записи из БД и вывести их в ЛОГ
-    public static WikiPage[] getAllRecords(Context context){
+    //выбрать все записи из БД в виде списка
+    public static ArrayList<WikiPage> getAllRecords(Context context){
         MySQLiteOpenHelper dataBaseHelper;
         SQLiteDatabase bd;
         dataBaseHelper = new MySQLiteOpenHelper(context);
@@ -19,14 +20,14 @@ public class DB {
         Cursor cursor;
         String sql = "SELECT * FROM wiki_pages";
         cursor = bd.rawQuery(sql,null);
-        WikiPage[] wikiPages = new WikiPage[cursor.getCount()];
+        ArrayList<WikiPage> wikiPages = new ArrayList<>();
         cursor.moveToFirst();
         //Log.d("wiki7777", "records: " + cursor.getCount());
         int i = 0;
         while (!cursor.isAfterLast()){
             //  Log.d("wiki7777", cursor.getString(0) + " " + cursor.getString(1) + " " + cursor.getString(2) + " " + cursor.getString(3) + " " + cursor.getString(4));
             WikiPage wikiPage = new WikiPage(cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4));
-            wikiPages[i] = wikiPage;
+            wikiPages.add(wikiPage);
             i++;
             cursor.moveToNext();
         }
