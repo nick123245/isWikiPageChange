@@ -25,14 +25,14 @@ import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
 
-    ArrayList<WikiPage> wikiPages;
-    ArrayList<String> paths;
+    ArrayList<WikiPage> wikiPages; // список вики-страниц
+    ArrayList<String> paths;  // список для отображения на экране и для парсинга
     TextView textView;
     ListView listView;
     ArrayAdapter<String> adapter;
     Context context;
-    Button reloadButton, addButton, getDataButton;
-    EditText newUrlField;
+    Button reloadButton, addButton, getDataButton;  // кнопки управления
+    EditText newUrlField; // поля ввода новой ссылки
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,15 +51,15 @@ public class MainActivity extends AppCompatActivity {
 
         wikiPages = DB.getAllRecords(this);  //возьмем все записи из базы данных
 
-        //создадим строковый массив для заполнения списка
+        //создадим строковый список для стартового заполнения списка
+        //его элементы - это инфрмация из БД
         paths = new ArrayList<>();
         for (int i=0; i<wikiPages.size(); i++){
-            paths.add(wikiPages.get(i).getUrl());
+            paths.add(wikiPages.get(i).getUrl() + "\n" + "Последние время и дата правки на сайте: "  + wikiPages.get(i).getDate() + "\n" + "Последние время и дата правки на сайте: " + wikiPages.get(i).getNewDate() + "\n" + wikiPages.get(i).getIsChange());
         }
 
         //адаптер для списка
-        adapter = new ArrayAdapter<>(this,
-                R.layout.item_layout, paths);
+        adapter = new ArrayAdapter<>(this, R.layout.item_layout, paths);
         listView.setAdapter(adapter);
 
 
@@ -67,6 +67,12 @@ public class MainActivity extends AppCompatActivity {
         getDataButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //создадим строковый список для парсинга
+                //его элементы - это только ссылки на вики-страницы
+                paths.clear();
+                for (int i=0; i<wikiPages.size(); i++){
+                    paths.add(wikiPages.get(i).getUrl());
+                }
                 // для парсинга необходимо создать новый поток
                 MyTask mt = new MyTask();
                 mt.execute(paths.toArray(new String[paths.size()]));
@@ -74,17 +80,15 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
-        //лобавление записи в БД по нажатию на кнопку
+        //добавление записи в БД по нажатию на кнопку
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!newUrlField.getText().toString().equals("")){
-                    DB.addWikiPage(new WikiPage(newUrlField.getText().toString()), v.getContext());
-                    paths.add(newUrlField.getText().toString());
-                //    mt.execute(paths.toArray(new String[paths.size()]));
-
-                    adapter.notifyDataSetChanged();
+                if (!newUrlField.getText().toString().equals("")){ //если поле ввода новой ссылки не пустое
+                    DB.addWikiPage(new WikiPage(newUrlField.getText().toString()), v.getContext()); // добавляем ссылку в базу данных
+                    paths.add(newUrlField.getText().toString());  // добавляем ссылку для отображения на экране
+                    wikiPages = DB.getAllRecords(context); // обновляем список из базуц данных
+                    adapter.notifyDataSetChanged();  // обновляем адаптер
                     Toast.makeText(getApplicationContext(),"Страница успешно добавлена!", Toast.LENGTH_LONG).show();
                 }else {
                     Toast.makeText(getApplicationContext(),"Поле пустое!", Toast.LENGTH_LONG).show();
@@ -96,14 +100,14 @@ public class MainActivity extends AppCompatActivity {
         reloadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DB.updateRecords(wikiPages,context);
+                DB.updateRecords(wikiPages,context);  // обновляем данные в базе данных на основе новых полученных от сервера данных
                 Log.d("wiki7777", " update");
-                wikiPages = DB.getAllRecords(context);
-                paths.clear();
-                for (int i=0; i<wikiPages.length; i++){
-                    paths.add(wikiPages[i].getUrl() + "\n" + "Последняя дата правки в базе: "  + wikiPages[i].getDate() + "\n" + "Последняя дата правки на сайте: " + wikiPages[i].getNewDate() + "\n" + wikiPages[i].getIsChange());
+                wikiPages = DB.getAllRecords(context);  // получаем новый список из БД
+                paths.clear();   // создаем новый список для отображения на экране
+                for (int i=0; i<wikiPages.size(); i++){
+                    paths.add(wikiPages.get(i).getUrl() + "\n" + "Последние время и дата правки в базе: "  + wikiPages.get(i).getDate() + "\n" + "Последние время и дата правки на сайте: " + wikiPages.get(i).getNewDate() + "\n" + wikiPages.get(i).getIsChange());
                 }
-                adapter.notifyDataSetChanged();
+                adapter.notifyDataSetChanged();  // обновляем адаптер
             }
         });
 
@@ -113,42 +117,40 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(String... params) {
-            // params - это массив строк - url-адрессов для парсинга
+            // params - это массив строк - url-адресов для парсинга
 
             String str = "null";
-            //Log.d("wiki7777", Arrays.toString(params));
+
             Document doc = null; // Здесь хранится HTML страничка википедии
 
             // по очереди парсим каждую страницу
             for (int i=0;i<params.length; i++) {
-                //   Log.d("wiki7777", i + "");
+
                 try {
                     // Считываем страницу
                     doc = Jsoup.connect(params[i] + "&action=history").get(); // добавляем к адресу страницы элемент, чтоб открыть историю изменения страницы
-                    Elements elements = doc.getElementsByClass("mw-index-pager-list-header-first mw-index-pager-list-header"); // по классу находим дату последнего изменения
+                    // Elements elements = doc.getElementsByClass("mw-index-pager-list-header-first mw-index-pager-list-header"); // по классу находим дату последнего изменения
+                    Elements elements = doc.getElementsByClass("mw-changeslist-date"); // по классу находим дату последнего изменения
                     for (Element element : elements) {
                         str = element.getAllElements().text(); //берем дату
-                        wikiPages[i].setNewDate(str); // записываем ее в поле для новой даты
+                        wikiPages.get(i).setNewDate(str); // записываем ее в поле для новой даты
                         String isChange = " \nзапись без изменений";  //флаг изменения
-                        if (!wikiPages[i].getDate().equals(wikiPages[i].getNewDate())){
+                        if (!wikiPages.get(i).getDate().equals(wikiPages.get(i).getNewDate())){
                             isChange = " \nзапись была изменена";
                         }
                         // формируем новую строку для списка на экране
-                        paths.set(i, paths.get(i) + "\n" + "Последняя дата правки в базе: "  + wikiPages[i].getDate() + "\n" + "Последняя дата правки на сайте: " + wikiPages[i].getNewDate() + isChange);
-                        //Log.d("wiki7777", str);
+                        paths.set(i, paths.get(i) + "\n" + "Последние время и дата правки на сайте: "  + wikiPages.get(i).getDate() + "\n" + "Последние время и дата правки на сайте: " + wikiPages.get(i).getNewDate() + isChange);
+
+                        break;
 
                     }
                 } catch (IOException e) {
                     // Если не получилось считать
                     e.printStackTrace();
                 }
-
             }
             return str  ;
         }
-
-
-
 
         @Override
         protected void onPostExecute(String s) {

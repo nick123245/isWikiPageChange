@@ -16,10 +16,10 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     public static final String COLUMN_NEW_DATE = "new_date";
     public static final String COLUMN_IS_CHANGE = "is_change";
 
-    private static final String DATABASE_NAME = "db_wiki.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final String DATABASE_NAME = "db_wiki_v1.db";
+    private static final int DATABASE_VERSION = 1;
 
-    // Database creation sql statement
+    // SQL выражение для создания БД
     private static final String DATABASE_CREATE = "create table "
             + TABLE_WIKI_PAGES + "(" + COLUMN_ID + " integer primary key autoincrement, "
             + COLUMN_URL + " text not null, "
@@ -34,7 +34,7 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase database) {
         database.execSQL(DATABASE_CREATE);
-        Log.d("wiki7777", "bd create");
+
         //добавим несколько адресов в базу
         ContentValues newValues = new ContentValues();
         newValues.put("url", "https://ru.wikipedia.org/w/index.php?title=Java");
